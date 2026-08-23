@@ -213,7 +213,7 @@
   var url = cfg.polarCheckoutUrl;
   var btn = document.getElementById("buy-btn");
   var status = document.getElementById("buy-status");
-  var extras = document.querySelectorAll("[data-polar-checkout], a.nav-buy, a.hero-actions a.btn-accent");
+  var extras = document.querySelectorAll("[data-polar-checkout], a.nav-buy, a[href='#buy'], a[href*='buy.polar.sh']");
   if (!btn) return;
   if (url) {
     extras.forEach(function (el) {
