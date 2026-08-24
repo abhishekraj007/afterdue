@@ -428,9 +428,17 @@
   function showBanner(show) {
     if (!banner) return;
     banner.hidden = !show;
-    if (show && typeof banner.scrollIntoView === "function") {
-      banner.scrollIntoView({ block: "start", behavior: "auto" });
-    }
+    if (!show) return;
+    window.requestAnimationFrame(function () {
+      if (typeof banner.scrollIntoView === "function") {
+        banner.scrollIntoView({ block: "start", behavior: "auto" });
+      }
+      var header = document.querySelector(".site-header");
+      var offset = header ? header.getBoundingClientRect().height + 8 : 64;
+      if (banner.getBoundingClientRect().top < offset) {
+        window.scrollBy(0, banner.getBoundingClientRect().top - offset);
+      }
+    });
   }
 
   form.setAttribute("action", "");

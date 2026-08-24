@@ -441,11 +441,14 @@ textarea { resize: vertical; min-height: 4.5rem; }
 .toggle-set { margin-bottom: 1rem; }
 
 .draft-banner {
+  position: sticky;
+  top: 3.6rem;
+  z-index: 9;
   margin: 0 0 1.35rem;
   padding: 0.85rem 0.9rem;
   border: 1px solid var(--warn);
-  background: color-mix(in srgb, var(--sheet) 70%, #f3e6c8);
-  max-width: 40rem;
+  background: color-mix(in srgb, var(--sheet) 82%, #f3e6c8);
+  box-shadow: var(--shadow);
 }
 
 .draft-banner p {
