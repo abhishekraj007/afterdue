@@ -287,7 +287,14 @@
       /* ignore quota / private-mode failures */
     }
     pendingDraft = null;
-    if (banner) banner.hidden = true;
+    showBanner(false);
+  }
+
+  function forgetDraft() {
+    skipSave = true;
+    if (saveBox) saveBox.checked = false;
+    clearStore();
+    skipSave = false;
   }
 
   function loadSaved() {
@@ -467,7 +474,7 @@
       if (savingEnabled()) {
         persist();
       } else {
-        clearStore();
+        forgetDraft();
         setHint("Draft deleted from this browser. Nothing was uploaded.");
       }
     });
@@ -475,8 +482,7 @@
 
   if (clearBtn) {
     clearBtn.addEventListener("click", function () {
-      if (saveBox) saveBox.checked = false;
-      clearStore();
+      forgetDraft();
       startBlank();
       setHint("Draft deleted from this browser.");
     });
@@ -495,8 +501,7 @@
 
   if (discardBtn) {
     discardBtn.addEventListener("click", function () {
-      if (saveBox) saveBox.checked = false;
-      clearStore();
+      forgetDraft();
       setHint("Saved draft deleted. This page is showing the sample.");
     });
   }
