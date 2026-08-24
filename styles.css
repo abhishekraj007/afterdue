@@ -258,6 +258,51 @@ a:hover { color: var(--accent-2); }
   color: var(--ink-3);
 }
 
+.hero-values {
+  margin: 0 0 1.35rem;
+  padding: 0 0 0 1.15rem;
+  color: var(--ink-2);
+  max-width: 38rem;
+}
+
+.hero-values li { margin: 0.35rem 0; }
+
+.trust-strip {
+  padding: 1.35rem 0 1.5rem;
+  border-bottom: 1px solid var(--rule);
+  background: color-mix(in srgb, var(--sheet) 55%, var(--paper));
+}
+
+.trust-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 800px) {
+  .trust-grid { grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+}
+
+.trust-grid li { margin: 0; }
+
+.trust-grid strong {
+  display: block;
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 550;
+  margin-bottom: 0.25rem;
+  color: var(--ink);
+}
+
+.trust-grid span {
+  display: block;
+  font-size: 0.92rem;
+  color: var(--ink-2);
+  line-height: 1.45;
+}
+
 /* Sections */
 .section-head { max-width: 38rem; margin-bottom: 1.75rem; }
 
@@ -274,9 +319,13 @@ a:hover { color: var(--accent-2); }
 .invoice-section { padding: 2.75rem 0 3.5rem; }
 .chase-section,
 .pricing-section,
-.faq-section { padding: 3.5rem 0; }
+.faq-section,
+.fee-section,
+.founder-section { padding: 3.5rem 0; }
 .chase-section,
-.faq-section { border-top: 1px solid var(--rule); }
+.faq-section,
+.fee-section,
+.founder-section { border-top: 1px solid var(--rule); }
 
 /* Invoice form */
 .invoice-layout {
@@ -387,6 +436,25 @@ textarea { resize: vertical; min-height: 4.5rem; }
   margin: 0.7rem 0 0;
   font-size: 0.85rem;
   color: var(--ink-3);
+}
+
+.toggle-set { margin-bottom: 1rem; }
+
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--ink-2);
+  margin-bottom: 0.45rem;
+}
+
+.check input {
+  width: auto;
+  margin: 0.2rem 0 0;
+  flex: none;
 }
 
 /* Preview */
@@ -624,20 +692,22 @@ textarea { resize: vertical; min-height: 4.5rem; }
   font-size: 0.95rem;
 }
 
-.chase-body {
+.chase-body,
+.chase-letter {
   margin: 0;
   color: var(--ink-2);
-  position: relative;
 }
 
-.chase-body::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 1.4rem;
-  background: linear-gradient(transparent, var(--sheet));
-  pointer-events: none;
+.chase-letter { font-size: 0.95rem; }
+
+.chase-lock {
+  margin: 0.55rem 0 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
 }
+
+.chase-list li.chase-locked p { margin: 0; color: var(--ink-2); }
 
 .chase-foot {
   margin: 1.5rem 0 1rem;
@@ -700,6 +770,12 @@ textarea { resize: vertical; min-height: 4.5rem; }
   margin: 0 0 1.1rem;
 }
 
+.price-guarantee {
+  margin: 0.85rem 0 0;
+  font-size: 0.88rem;
+  color: var(--ink-3);
+}
+
 .price-aside h3 {
   font-size: 1.25rem;
   margin: 0 0 0.5rem;
@@ -723,13 +799,69 @@ textarea { resize: vertical; min-height: 4.5rem; }
 
 .buy-inner { max-width: 38rem; }
 
-.buy-placeholder {
+.buy-placeholder,
+.buy-status {
   margin: 1rem 0 0;
-  padding: 0.85rem 0.95rem;
-  border: 1px dashed #6d665a;
   color: #cfc6b4;
   font-size: 0.95rem;
 }
+
+.buy-steps {
+  margin: 0 0 1.25rem;
+  padding: 0 0 0 1.15rem;
+  color: #cfc6b4;
+}
+
+.buy-steps li { margin: 0.35rem 0; }
+
+.founder-inner { max-width: 38rem; }
+.founder-inner p { color: var(--ink-2); margin: 0; }
+
+.fee-layout .section-head { margin-bottom: 1.25rem; }
+
+.fee-card {
+  max-width: 28rem;
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  padding: 1.2rem 1.15rem 1.25rem;
+}
+
+.fee-kinds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.fee-out {
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--rule);
+}
+
+.fee-out div {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.28rem 0;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.fee-out .grand {
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.fee-note,
+.fee-legal {
+  margin: 0.65rem 0 0;
+  font-size: 0.88rem;
+  color: var(--ink-3);
+}
+
+.legal-page .fee-card { margin: 1.25rem 0 1.5rem; }
 
 .buy-section .btn-accent:disabled {
   opacity: 0.7;

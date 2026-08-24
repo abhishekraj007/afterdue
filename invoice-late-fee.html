@@ -54,9 +54,9 @@
         <a href="index.html#chase">Chase</a>
         <a href="index.html#pricing">Pricing</a>
         <a href="index.html#faq">FAQ</a>
-        <a class="nav-buy" href="index.html#buy">Buy · $19</a>
+        <a class="nav-buy" href="https://buy.polar.sh/polar_cl_slI3chypFlsy5k6T0BUcyRiggraafjyquNfHF3i0PJr" rel="noopener">Buy · $19</a>
       </nav>
-      <a class="nav-buy nav-buy-mobile" href="index.html#buy">Buy · $19</a>
+      <a class="nav-buy nav-buy-mobile" href="https://buy.polar.sh/polar_cl_slI3chypFlsy5k6T0BUcyRiggraafjyquNfHF3i0PJr" rel="noopener">Buy · $19</a>
     </div>
   </header>
 
@@ -188,15 +188,37 @@ new_total  = unpaid_balance + fee</p>
         send the revision.
       </p>
 
+      <form id="fee-form" class="fee-card" autocomplete="off">
+        <label>
+          Unpaid balance (USD)
+          <input type="number" id="fee-balance" name="feeBalance" min="0" step="0.01" inputmode="decimal" value="4286.70">
+        </label>
+        <fieldset class="fee-kinds">
+          <legend>Fee</legend>
+          <label class="check"><input type="radio" name="feeKind" value="once" checked> One-time %</label>
+          <label class="check"><input type="radio" name="feeKind" value="month"> % per month</label>
+          <label class="check"><input type="radio" name="feeKind" value="flat"> Flat $</label>
+        </fieldset>
+        <label>
+          Rate or flat amount
+          <input type="number" id="fee-rate" name="feeRate" min="0" step="0.01" inputmode="decimal" value="5">
+        </label>
+        <div class="fee-out">
+          <div><span>Fee</span><strong id="fee-result-fee">$214.34</strong></div>
+          <div class="grand"><span>New total</span><strong id="fee-result-total">$4,501.04</strong></div>
+        </div>
+        <p class="fee-note" id="fee-result-note">One-time 5% of the unpaid balance.</p>
+      </form>
+
       <div class="callout">
         <p>
           The $19 Get Paid Pack is the worksheet, the clauses, and the
           message sequence that mentions the fee only when it is already
-          in the terms. Polar handles checkout and tax. No account.
+          in the terms. The file arrives by email after checkout. No account.
         </p>
       </div>
       <p>
-        <a class="btn btn-accent" href="index.html#buy">Buy the Get Paid Pack — $19</a>
+        <a class="btn btn-accent" href="https://buy.polar.sh/polar_cl_slI3chypFlsy5k6T0BUcyRiggraafjyquNfHF3i0PJr" rel="noopener">Buy the Get Paid Pack — $19</a>
       </p>
 
       <div class="related">
@@ -228,5 +250,7 @@ new_total  = unpaid_balance + fee</p>
       </div>
     </div>
   </footer>
+  <script src="config.js"></script>
+  <script src="site.js"></script>
 </body>
 </html>
