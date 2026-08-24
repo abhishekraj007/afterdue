@@ -441,15 +441,27 @@ textarea { resize: vertical; min-height: 4.5rem; }
 .toggle-set { margin-bottom: 1rem; }
 
 .draft-banner {
-  position: sticky;
-  top: 3.6rem;
-  z-index: 9;
-  margin: 0 0 1.35rem;
-  padding: 0.85rem 0.9rem;
-  border: 1px solid var(--warn);
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--warn);
   background: color-mix(in srgb, var(--sheet) 82%, #f3e6c8);
-  box-shadow: var(--shadow);
 }
+
+.draft-banner:not([hidden]) {
+  position: fixed;
+  top: 3.5rem;
+  left: 0;
+  right: 0;
+  z-index: 11;
+  margin: 0;
+  max-width: none;
+}
+
+body.has-draft-banner {
+  padding-top: 4.5rem;
+}
+
+.draft-banner .form-actions { margin: 0; }
+.draft-banner .wrap { width: min(100% - 2rem, var(--page)); margin-inline: auto; }
 
 .draft-banner p {
   margin: 0 0 0.65rem;

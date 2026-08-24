@@ -428,17 +428,12 @@
   function showBanner(show) {
     if (!banner) return;
     banner.hidden = !show;
+    document.body.classList.toggle("has-draft-banner", !!show);
     if (!show) return;
-    window.requestAnimationFrame(function () {
-      if (typeof banner.scrollIntoView === "function") {
-        banner.scrollIntoView({ block: "start", behavior: "auto" });
-      }
-      var header = document.querySelector(".site-header");
-      var offset = header ? header.getBoundingClientRect().height + 8 : 64;
-      if (banner.getBoundingClientRect().top < offset) {
-        window.scrollBy(0, banner.getBoundingClientRect().top - offset);
-      }
-    });
+    var header = document.querySelector(".site-header");
+    if (header && banner.parentNode !== document.body) {
+      header.insertAdjacentElement("afterend", banner);
+    }
   }
 
   form.setAttribute("action", "");
