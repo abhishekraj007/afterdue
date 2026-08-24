@@ -426,7 +426,11 @@
   }
 
   function showBanner(show) {
-    if (banner) banner.hidden = !show;
+    if (!banner) return;
+    banner.hidden = !show;
+    if (show && typeof banner.scrollIntoView === "function") {
+      banner.scrollIntoView({ block: "start", behavior: "auto" });
+    }
   }
 
   form.setAttribute("action", "");
@@ -500,6 +504,9 @@
   fillSample();
   if (saved && looksLikeDraft(saved)) {
     pendingDraft = saved;
+    if (window.history && "scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
     showBanner(true);
     if (saveBox) saveBox.checked = wasOptedIn;
     setHint("A draft is waiting. Restore it only on your own device.");
