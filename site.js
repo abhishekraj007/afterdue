@@ -1,10 +1,21 @@
 (function () {
   "use strict";
 
-  var POLAR = (window.AFTERDUE && window.AFTERDUE.polarCheckoutUrl) || "";
+  function checkoutUrl(raw) {
+    try {
+      var u = new URL(String(raw || ""), window.location.href);
+      if (u.protocol !== "https:") return "";
+      if (u.hostname !== "buy.polar.sh") return "";
+      if (u.username || u.password) return "";
+      return u.href;
+    } catch (err) {
+      return "";
+    }
+  }
 
   function wireCheckout() {
-    if (!POLAR) return;
+    var url = checkoutUrl(window.AFTERDUE && window.AFTERDUE.polarCheckoutUrl);
+    if (!url) return;
 
     var nodes = document.querySelectorAll(
       "[data-polar-checkout], a.nav-buy, a[href='#buy'], a[href='index.html#buy'], a[href*='buy.polar.sh']"
@@ -12,8 +23,8 @@
 
     Array.prototype.forEach.call(nodes, function (el) {
       if (el.tagName === "A") {
-        el.setAttribute("href", POLAR);
-        el.setAttribute("rel", "noopener");
+        el.setAttribute("href", url);
+        el.setAttribute("rel", "noopener noreferrer");
       }
     });
 
@@ -33,23 +44,21 @@
     var node = document.getElementById(id);
     if (!node) return 0;
     var n = parseFloat(String(node.value || "").replace(/,/g, ""));
-    return isFinite(n) ? n : 0;
+    if (!isFinite(n) || n < 0) return 0;
+    if (n > 1e9) return 1e9;
+    return n;
   }
 
   function renderFee() {
     var form = document.getElementById("fee-form");
     if (!form) return;
 
-    var balance = Math.max(0, feeNumber("fee-balance"));
+    var balance = feeNumber("fee-balance");
     var kind = (form.elements.feeKind && form.elements.feeKind.value) || "once";
-    var rate = Math.max(0, feeNumber("fee-rate"));
-    var fee = 0;
-
-    if (kind === "flat") {
-      fee = rate;
-    } else {
-      fee = balance * (rate / 100);
-    }
+    if (kind !== "once" && kind !== "month" && kind !== "flat") kind = "once";
+    var rate = feeNumber("fee-rate");
+    if (kind !== "flat" && rate > 100) rate = 100;
+    var fee = kind === "flat" ? rate : balance * (rate / 100);
 
     fee = Math.round(fee * 100) / 100;
     var next = Math.round((balance + fee) * 100) / 100;
@@ -74,6 +83,10 @@
   function wireFee() {
     var form = document.getElementById("fee-form");
     if (!form) return;
+    form.setAttribute("action", "");
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+    });
     form.addEventListener("input", renderFee);
     form.addEventListener("change", renderFee);
     renderFee();

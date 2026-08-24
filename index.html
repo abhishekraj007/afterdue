@@ -149,9 +149,9 @@
         <a href="#chase">Chase</a>
         <a href="#pricing">Pricing</a>
         <a href="#faq">FAQ</a>
-        <a class="nav-buy" href="https://buy.polar.sh/polar_cl_slI3chypFlsy5k6T0BUcyRiggraafjyquNfHF3i0PJr" rel="noopener">Buy · $19</a>
+        <a class="nav-buy" href="https://buy.polar.sh/polar_cl_slI3chypFlsy5k6T0BUcyRiggraafjyquNfHF3i0PJr" rel="noopener noreferrer">Buy · $19</a>
       </nav>
-      <a class="nav-buy nav-buy-mobile" href="https://buy.polar.sh/polar_cl_slI3chypFlsy5k6T0BUcyRiggraafjyquNfHF3i0PJr" rel="noopener">Buy · $19</a>
+      <a class="nav-buy nav-buy-mobile" href="https://buy.polar.sh/polar_cl_slI3chypFlsy5k6T0BUcyRiggraafjyquNfHF3i0PJr" rel="noopener noreferrer">Buy · $19</a>
     </div>
   </header>
 
@@ -172,7 +172,7 @@
         </ul>
         <div class="hero-actions">
           <a class="btn btn-ink" href="#invoice">Make a free invoice</a>
-          <a class="btn btn-accent" href="https://buy.polar.sh/polar_cl_slI3chypFlsy5k6T0BUcyRiggraafjyquNfHF3i0PJr" rel="noopener">Buy the Get Paid Pack — $19</a>
+          <a class="btn btn-accent" href="https://buy.polar.sh/polar_cl_slI3chypFlsy5k6T0BUcyRiggraafjyquNfHF3i0PJr" rel="noopener noreferrer">Buy the Get Paid Pack — $19</a>
         </div>
         <p class="hero-note">No login. Pay once, get the file by email. Seven-day refund if it is not what we listed.</p>
       </div>
@@ -214,20 +214,20 @@
         </header>
 
         <div class="invoice-layout">
-          <form id="invoice-form" class="invoice-form no-print" autocomplete="on">
+          <form id="invoice-form" class="invoice-form no-print" action="" autocomplete="on">
             <fieldset>
               <legend>From</legend>
               <label>
                 Your name / business
-                <input type="text" name="fromName" required>
+                <input type="text" name="fromName" required maxlength="120">
               </label>
               <label>
                 Your email
-                <input type="email" name="fromEmail">
+                <input type="email" name="fromEmail" maxlength="120" autocomplete="email">
               </label>
               <label>
                 Your city
-                <input type="text" name="fromCity">
+                <input type="text" name="fromCity" maxlength="80">
               </label>
             </fieldset>
 
@@ -235,15 +235,15 @@
               <legend>Bill to</legend>
               <label>
                 Client
-                <input type="text" name="clientName" required>
+                <input type="text" name="clientName" required maxlength="120" autocomplete="off">
               </label>
               <label>
                 Client email
-                <input type="email" name="clientEmail">
+                <input type="email" name="clientEmail" maxlength="120" autocomplete="off">
               </label>
               <label>
                 Client city
-                <input type="text" name="clientCity">
+                <input type="text" name="clientCity" maxlength="80" autocomplete="off">
               </label>
             </fieldset>
 
@@ -251,7 +251,7 @@
               <legend>Invoice</legend>
               <label>
                 Invoice #
-                <input type="text" name="invoiceNumber" required>
+                <input type="text" name="invoiceNumber" required maxlength="40" autocomplete="off">
               </label>
               <label>
                 Issue date
@@ -263,7 +263,7 @@
               </label>
               <label>
                 Tax %
-                <input type="number" name="taxRate" min="0" max="30" step="0.01" inputmode="decimal">
+                <input type="number" name="taxRate" min="0" max="30" step="0.01" inputmode="decimal" maxlength="8">
               </label>
             </fieldset>
 
@@ -282,13 +282,13 @@
             <fieldset>
               <legend>Notes</legend>
               <label class="sr-only" for="notes">Notes</label>
-              <textarea id="notes" name="notes" rows="3" placeholder="Scope, revision terms, PO number…"></textarea>
+              <textarea id="notes" name="notes" rows="3" maxlength="2000" autocomplete="off" placeholder="Scope, revision terms, PO number…"></textarea>
             </fieldset>
 
             <fieldset>
               <legend>Payment instructions</legend>
               <label class="sr-only" for="payment">Payment instructions</label>
-              <textarea id="payment" name="payment" rows="4" placeholder="Zelle, ACH routing, Venmo handle…"></textarea>
+              <textarea id="payment" name="payment" rows="4" maxlength="2000" autocomplete="off" placeholder="Zelle, ACH routing, Venmo handle…"></textarea>
             </fieldset>
 
             <fieldset class="toggle-set">
@@ -297,14 +297,27 @@
                 <input type="checkbox" name="depositMode" id="deposit-mode">
                 50% deposit invoice — due amount becomes half the total
               </label>
+              <label class="check">
+                <input type="checkbox" name="saveDraft" id="save-draft">
+                Keep a draft on this device — not for a shared computer
+              </label>
             </fieldset>
+
+            <div id="draft-banner" class="draft-banner" hidden>
+              <p>This browser has a saved invoice draft. Restore it only if this is your device.</p>
+              <div class="form-actions">
+                <button type="button" class="btn btn-ink" id="restore-draft">Restore draft</button>
+                <button type="button" class="btn btn-ghost" id="discard-draft">Delete draft</button>
+              </div>
+            </div>
 
             <div class="form-actions">
               <button type="button" class="btn btn-accent" id="print-btn">Print / Save PDF</button>
               <button type="button" class="btn btn-ghost" id="blank-btn">Start blank</button>
               <button type="button" class="btn btn-ghost" id="reset-btn">Reset sample</button>
+              <button type="button" class="btn btn-ghost" id="clear-draft">Forget draft</button>
             </div>
-            <p class="form-hint" id="save-hint">Print dialog → Save as PDF. Drafts stay in this browser.</p>
+            <p class="form-hint" id="save-hint">Print dialog → Save as PDF. Drafts are optional and stay on this device.</p>
           </form>
 
           <div class="preview-col">
@@ -453,7 +466,7 @@
           Templates, not legal advice.
         </p>
         <p class="center">
-          <a class="btn btn-accent" href="https://buy.polar.sh/polar_cl_slI3chypFlsy5k6T0BUcyRiggraafjyquNfHF3i0PJr" rel="noopener">Get the full sequence — $19</a>
+          <a class="btn btn-accent" href="https://buy.polar.sh/polar_cl_slI3chypFlsy5k6T0BUcyRiggraafjyquNfHF3i0PJr" rel="noopener noreferrer">Get the full sequence — $19</a>
         </p>
       </div>
     </section>
@@ -469,7 +482,7 @@
             are not inventing 5% on a quiet Thursday.
           </p>
         </header>
-        <form id="fee-form" class="fee-card" autocomplete="off">
+        <form id="fee-form" class="fee-card" action="" autocomplete="off">
           <label>
             Unpaid balance (USD)
             <input type="number" id="fee-balance" name="feeBalance" min="0" step="0.01" inputmode="decimal" value="4286.70">
@@ -519,14 +532,14 @@
               <li><strong>Three clauses</strong> — Net-15, late fee, pause of new work</li>
             </ul>
             <p class="price-legal">Clauses are templates, not legal advice. You adapt them. You stay responsible for your contracts. Buying this does not make a client pay.</p>
-            <a class="btn btn-accent btn-block" href="https://buy.polar.sh/polar_cl_slI3chypFlsy5k6T0BUcyRiggraafjyquNfHF3i0PJr" rel="noopener">Buy the Get Paid Pack — $19</a>
+            <a class="btn btn-accent btn-block" href="https://buy.polar.sh/polar_cl_slI3chypFlsy5k6T0BUcyRiggraafjyquNfHF3i0PJr" rel="noopener noreferrer">Buy the Get Paid Pack — $19</a>
             <p class="price-guarantee">If you were charged and the file never arrived, we resend it. If the file is not the list above, email <a href="mailto:support@afterdue.com">support@afterdue.com</a> within 7 days for a refund.</p>
           </article>
 
           <aside class="price-aside">
             <h3>Free, always</h3>
             <ul>
-              <li>Live invoice generator, drafts saved here</li>
+              <li>Live invoice generator — draft only if you ask</li>
               <li>USD, tax line, due date, 50% deposit mode</li>
               <li>Zelle / ACH / Venmo instructions</li>
               <li>Print or save as PDF — no Afterdue stamp</li>
@@ -561,7 +574,7 @@
           <li>Open the file that arrives by email.</li>
           <li>Copy message 1, or the step you are actually on. Send it from your thread.</li>
         </ul>
-        <a class="btn btn-accent" id="buy-btn" href="https://buy.polar.sh/polar_cl_slI3chypFlsy5k6T0BUcyRiggraafjyquNfHF3i0PJr" rel="noopener" data-polar-checkout>
+        <a class="btn btn-accent" id="buy-btn" href="https://buy.polar.sh/polar_cl_slI3chypFlsy5k6T0BUcyRiggraafjyquNfHF3i0PJr" rel="noopener noreferrer" data-polar-checkout>
           Buy the Get Paid Pack — $19
         </a>
         <p class="buy-status" id="buy-status" role="status">

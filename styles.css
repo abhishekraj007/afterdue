@@ -440,6 +440,19 @@ textarea { resize: vertical; min-height: 4.5rem; }
 
 .toggle-set { margin-bottom: 1rem; }
 
+.draft-banner {
+  margin: 0 0 1rem;
+  padding: 0.85rem 0.9rem;
+  border: 1px solid var(--warn);
+  background: color-mix(in srgb, var(--sheet) 70%, #f3e6c8);
+}
+
+.draft-banner p {
+  margin: 0 0 0.65rem;
+  color: var(--ink-2);
+  font-size: 0.92rem;
+}
+
 .check {
   display: flex;
   align-items: flex-start;

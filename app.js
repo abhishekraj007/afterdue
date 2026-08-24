@@ -2,6 +2,22 @@
   "use strict";
 
   var STORE_KEY = "afterdue.invoice.v1";
+  var SAVE_KEY = "afterdue.saveDraft.v1";
+  var MAX_ITEMS = 40;
+  var LIMITS = {
+    fromName: 120,
+    fromEmail: 120,
+    fromCity: 80,
+    clientName: 120,
+    clientEmail: 120,
+    clientCity: 80,
+    invoiceNumber: 40,
+    issueDate: 10,
+    dueDate: 10,
+    taxRate: 8,
+    notes: 2000,
+    payment: 2000
+  };
 
   var SAMPLE = {
     fromName: "Maya Chen Studio",
@@ -31,7 +47,13 @@
   var resetBtn = document.getElementById("reset-btn");
   var blankBtn = document.getElementById("blank-btn");
   var saveHint = document.getElementById("save-hint");
+  var saveBox = document.getElementById("save-draft");
+  var clearBtn = document.getElementById("clear-draft");
+  var banner = document.getElementById("draft-banner");
+  var restoreBtn = document.getElementById("restore-draft");
+  var discardBtn = document.getElementById("discard-draft");
   var skipSave = false;
+  var pendingDraft = null;
 
   if (!form || !itemsWrap) return;
 
@@ -63,6 +85,53 @@
     return toISO(d);
   }
 
+  function clip(value, max) {
+    return String(value == null ? "" : value).replace(/\0/g, "").slice(0, max);
+  }
+
+  function isoDate(value) {
+    var text = clip(value, 10);
+    return /^\d{4}-\d{2}-\d{2}$/.test(text) ? text : "";
+  }
+
+  function sanitizeState(raw) {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+    var out = {};
+    Object.keys(LIMITS).forEach(function (key) {
+      if (key === "issueDate" || key === "dueDate") {
+        out[key] = isoDate(raw[key]);
+      } else {
+        out[key] = clip(raw[key], LIMITS[key]);
+      }
+    });
+    out.depositMode = raw.depositMode === true;
+    out.items = [];
+    if (Array.isArray(raw.items)) {
+      raw.items.slice(0, MAX_ITEMS).forEach(function (item) {
+        if (!item || typeof item !== "object") return;
+        out.items.push({
+          desc: clip(item.desc, 140),
+          qty: clip(item.qty, 12),
+          rate: clip(item.rate, 16)
+        });
+      });
+    }
+    if (!out.items.length) out.items.push({ desc: "", qty: "1", rate: "" });
+    return out;
+  }
+
+  function looksLikeDraft(state) {
+    if (!state) return false;
+    if (state.fromName || state.clientName || state.payment || state.notes) return true;
+    return state.items.some(function (item) {
+      return item.desc || item.rate;
+    });
+  }
+
+  function savingEnabled() {
+    return !!(saveBox && saveBox.checked);
+  }
+
   function el(tag, attrs, text) {
     var node = document.createElement(tag);
     if (attrs) {
@@ -76,6 +145,8 @@
   }
 
   function addItem(item) {
+    if (itemsWrap.children.length >= MAX_ITEMS) return;
+
     var row = el("div", { class: "line-item" });
 
     var dLab = el("label", { class: "item-desc" }, "Description");
@@ -169,7 +240,7 @@
   }
 
   function snapshot() {
-    return {
+    return sanitizeState({
       fromName: field("fromName"),
       fromEmail: field("fromEmail"),
       fromCity: field("fromCity"),
@@ -190,36 +261,57 @@
           rate: String(item.rate || "")
         };
       })
-    };
+    });
+  }
+
+  function setHint(text) {
+    if (saveHint) saveHint.textContent = text;
   }
 
   function persist() {
-    if (skipSave) return;
+    if (skipSave || !savingEnabled() || pendingDraft) return;
     try {
       window.localStorage.setItem(STORE_KEY, JSON.stringify(snapshot()));
-      if (saveHint) saveHint.textContent = "Draft saved in this browser. Nothing is uploaded.";
+      window.localStorage.setItem(SAVE_KEY, "1");
+      setHint("Draft saved on this device only. Nothing is uploaded. Uncheck to stop.");
     } catch (err) {
-      if (saveHint) saveHint.textContent = "This browser would not save a draft. Print before you close the tab.";
+      setHint("This browser would not save a draft. Print before you close the tab.");
     }
+  }
+
+  function clearStore() {
+    try {
+      window.localStorage.removeItem(STORE_KEY);
+      window.localStorage.removeItem(SAVE_KEY);
+    } catch (err) {
+      /* ignore quota / private-mode failures */
+    }
+    pendingDraft = null;
+    if (banner) banner.hidden = true;
   }
 
   function loadSaved() {
     try {
       var raw = window.localStorage.getItem(STORE_KEY);
-      if (!raw) return null;
-      var data = JSON.parse(raw);
-      if (!data || typeof data !== "object") return null;
-      return data;
+      if (!raw || raw.length > 20000) return null;
+      return sanitizeState(JSON.parse(raw));
     } catch (err) {
       return null;
+    }
+  }
+
+  function optedIn() {
+    try {
+      return window.localStorage.getItem(SAVE_KEY) === "1";
+    } catch (err) {
+      return false;
     }
   }
 
   function applyState(state) {
     if (!state) return;
     skipSave = true;
-    Object.keys(SAMPLE).forEach(function (key) {
-      if (key === "items" || key === "depositMode") return;
+    Object.keys(LIMITS).forEach(function (key) {
       if (form.elements[key] && state[key] != null) {
         form.elements[key].value = state[key];
       }
@@ -229,7 +321,7 @@
     }
     itemsWrap.replaceChildren();
     var items = Array.isArray(state.items) && state.items.length ? state.items : [{ desc: "", qty: "1", rate: "" }];
-    items.forEach(addItem);
+    items.slice(0, MAX_ITEMS).forEach(addItem);
     skipSave = false;
     render();
   }
@@ -240,6 +332,8 @@
       return sum + item.amount;
     }, 0);
     var taxRate = parseFloat(field("taxRate")) || 0;
+    if (taxRate < 0) taxRate = 0;
+    if (taxRate > 30) taxRate = 30;
     var tax = subtotal * (taxRate / 100);
     var total = subtotal + tax;
     var deposit = checked("depositMode");
@@ -302,7 +396,9 @@
   function fillSample() {
     applyState(SAMPLE);
     persist();
-    if (saveHint) saveHint.textContent = "Sample restored. Edit it — the draft stays in this browser.";
+    setHint(savingEnabled()
+      ? "Sample restored. This draft is saved on this device only."
+      : "Sample restored. Check “Keep a draft” if you want this browser to remember your invoice.");
   }
 
   function startBlank() {
@@ -324,11 +420,19 @@
       items: [{ desc: "", qty: "1", rate: "" }]
     });
     persist();
-    if (saveHint) saveHint.textContent = "Blank invoice. Due date set to Net 15 from today.";
+    setHint("Blank invoice. Due date set to Net 15 from today.");
     var first = form.querySelector('[name="fromName"]');
     if (first) first.focus();
   }
 
+  function showBanner(show) {
+    if (banner) banner.hidden = !show;
+  }
+
+  form.setAttribute("action", "");
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+  });
   form.addEventListener("input", function () {
     render();
     persist();
@@ -351,11 +455,53 @@
     window.print();
   });
 
+  if (saveBox) {
+    saveBox.addEventListener("change", function () {
+      if (savingEnabled()) {
+        persist();
+      } else {
+        clearStore();
+        setHint("Draft deleted from this browser. Nothing was uploaded.");
+      }
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener("click", function () {
+      if (saveBox) saveBox.checked = false;
+      clearStore();
+      startBlank();
+      setHint("Draft deleted from this browser.");
+    });
+  }
+
+  if (restoreBtn) {
+    restoreBtn.addEventListener("click", function () {
+      if (!pendingDraft) return;
+      applyState(pendingDraft);
+      pendingDraft = null;
+      showBanner(false);
+      if (savingEnabled()) persist();
+      setHint("Draft restored. It never left this browser.");
+    });
+  }
+
+  if (discardBtn) {
+    discardBtn.addEventListener("click", function () {
+      if (saveBox) saveBox.checked = false;
+      clearStore();
+      setHint("Saved draft deleted. This page is showing the sample.");
+    });
+  }
+
   var saved = loadSaved();
-  if (saved && (saved.fromName || saved.clientName || (saved.items && saved.items.some(function (item) { return item.desc || item.rate; })))) {
-    applyState(saved);
-    if (saveHint) saveHint.textContent = "Your last draft was restored. It never left this browser.";
-  } else {
-    fillSample();
+  var wasOptedIn = optedIn();
+  if (saveBox) saveBox.checked = false;
+  fillSample();
+  if (saved && looksLikeDraft(saved)) {
+    pendingDraft = saved;
+    showBanner(true);
+    if (saveBox) saveBox.checked = wasOptedIn;
+    setHint("A draft is waiting. Restore it only on your own device.");
   }
 })();
